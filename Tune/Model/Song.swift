@@ -9,7 +9,8 @@ import Foundation
 import HandyJSON
 
 struct Song: HandyJSON {
+    var trackId: Int?
     var trackName: String?
     var previewUrl: String?
-    var artworkUrl30: String?
+    var artworkUrl100: String?
 }

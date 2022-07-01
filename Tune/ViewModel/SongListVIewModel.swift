@@ -11,26 +11,35 @@ class SongListViewModel {
 
     var songs = [SongViewModel]()
     var currentSong: SongViewModel?
+    var page = 1
+    var term = "愛"
     
-    func getSongs(term: String, success: @escaping () -> Void)
+    func getSongs(term: String, page: Int = 1, limit:Int = 10, success: @escaping () -> Void, fail: @escaping (ResponseError) -> Void)
     {
-        let params = [
+        var params = [
             "term" : term,
             "entity" : "song",
+            "limit" : "\(limit)",
+            "country" : "TW",
         ]
+        if page != 1 {
+            params["offset"] = "\((page-1) * limit)"
+        }
+
         
         ListResponse<Song>.request(api: .searchSong, params: params) { res in
-            guard res.isSuccess else { return }
-            guard let v = res.value else { return }
+            guard res.isSuccess else { return fail(.deserializeFailed) }
+            guard let v = res.value else { return fail(.deserializeFailed) }
+            guard v.results.count != 0 else { return fail(.emptyDataFailed) }
 
             var songs = [SongViewModel]()
 
             for song in v.results {
                 songs.append(SongViewModel(song: song))
             }
-            
-            self.songs = songs
-            success()
+
+            self.songs = page == 1 ? songs : self.songs + songs
+            return success()
         }
     }
 }

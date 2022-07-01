@@ -9,35 +9,7 @@ import UIKit
 import SnapKit
 import AVFoundation
 
-class SongListViewController: UIViewController, SongViewDelegate, SongViewModelDelegate {
-    func didCoverTap(song: SongViewModel) {
-//        switch song.currentState {
-//        case .playing:
-//            song.currentState = .pause
-//        default:
-//            viewModel.currentSong = song
-//            song.currentState = .playing
-//        }
-//
-        viewModel.currentSong = song
-        playerItem = AVPlayerItem(url: URL(string: viewModel.currentSong!.audioUrl)!)
-        player = AVPlayer(playerItem: playerItem)
-        song.currentState = .playing
-
-        print(song.trackName)
-        print(song.currentState)
-    }
-    
-    func didStateChanged(state: SongViewModel.PlyayerState) {
-        switch state {
-        case .playing:
-            player.play()
-        default:
-            player.pause()
-        }
-    }
-    
-
+class SongListViewController: UIViewController {
 
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -45,6 +17,7 @@ class SongListViewController: UIViewController, SongViewDelegate, SongViewModelD
         tableView.separatorStyle = .none
         tableView.backgroundColor = .red
         tableView.dataSource = self
+        tableView.delegate = self
         return tableView
     }()
     
@@ -61,10 +34,12 @@ class SongListViewController: UIViewController, SongViewDelegate, SongViewModelD
         
         initView()
         
-        viewModel.getSongs(term: "小蘋果") {
+        viewModel.getSongs(term: viewModel.term) {
             self.tableView.reloadData()
         }
-        
+        fail: { err in
+            print(err.localizedDescription)
+        }
     }
 
 
@@ -84,7 +59,11 @@ extension SongListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.songs.count
     }
-    
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return view.bounds.height/10
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! SongViewCell
@@ -94,8 +73,65 @@ extension SongListViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 300
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard viewModel.songs.count > indexPath.row else { return }
+        guard indexPath.row == viewModel.songs.count-1 else { return }
+        
+        viewModel.page += 1
+        viewModel.getSongs(term: viewModel.term, page: viewModel.page) {
+            self.tableView.reloadData()
+        }
+        fail: { err in
+            self.viewModel.page -= 1
+            print(err.localizedDescription)
+        }
+        
+    }
+}
+
+
+extension SongListViewController: SongViewDelegate, SongViewModelDelegate {
+    func didCoverTap(song: SongViewModel) {
+        
+        if song.trackId == viewModel.currentSong?.trackId {
+            switch viewModel.currentSong?.currentState {
+            case .playing:
+                song.currentState = .stopped
+            default:
+                song.currentState = .playing
+            }
+            return
+        }
+        
+        
+        guard !song.audioUrl.isEmpty else { return }
+        viewModel.currentSong?.currentState = .stopped
+        viewModel.currentSong = song
+        viewModel.currentSong?.currentState = .load
+        print(song.trackName)
+        print(song.currentState)
+        print(song.audioUrl)
     }
     
+    func onStateChanged(state: SongViewModel.PlyayerState) {
+        switch state {
+        case .load:
+            playerItem = AVPlayerItem(url: URL(string: viewModel.currentSong!.audioUrl)!)
+            player = AVPlayer(playerItem: playerItem)
+            viewModel.currentSong?.currentState = .playing
+
+        case .playing:
+            player.play()
+            
+        case .pause:
+            player.pause()
+
+        case .stopped:
+            player.pause()
+            player.seek(to: .zero)
+            
+        default:
+            break
+        }
+    }
 }

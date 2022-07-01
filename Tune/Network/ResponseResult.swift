@@ -3,7 +3,6 @@ import Foundation
 public enum ResponseError: Error {
     case deserializeFailed
     case requestFailed
-    case sessionFailed
     case emptyDataFailed
 }
 public enum ResponseResult<Value> {

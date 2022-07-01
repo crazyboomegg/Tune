@@ -8,32 +8,39 @@
 import Foundation
 
 protocol SongViewModelDelegate {
-    func didStateChanged(state: SongViewModel.PlyayerState)
+    func onStateChanged(state: SongViewModel.PlyayerState)
 }
 
 class SongViewModel {
-    var delegate: SongViewModelDelegate?
 
     enum PlyayerState {
-        case none, playing, pause, stop
+        case none, load, playing, pause, stopped
     }
     
+    var delegate: SongViewModelDelegate?
+
     var currentState: SongViewModel.PlyayerState = .none {
         didSet {
-            self.delegate?.didStateChanged(state: self.currentState)
+            self.delegate?.onStateChanged(state: self.currentState)
         }
     }
     
     
     var song: Song
     
+    
+    var trackId: Int {
+        guard let id = song.trackId else { return 0 }
+        return id
+    }
+    
     var trackName: String {
         guard let name = song.trackName else { return "" }
         return name
     }
-    
+
     var coverUrl: String {
-        guard let url = song.artworkUrl30 else { return "" }
+        guard let url = song.artworkUrl100 else { return "" }
         return url
     }
     

@@ -52,7 +52,7 @@ class SongViewCell: UITableViewCell {
         coverBtn.snp.makeConstraints({ make in
             make.left.equalToSuperview()
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(contentView.bounds.height - 5)
+            make.width.height.equalTo(contentView.bounds.height - 12)
         })
         
         contentView.addSubview(nameLabel)
@@ -63,6 +63,10 @@ class SongViewCell: UITableViewCell {
 
     }
     
+    override func prepareForReuse() {
+        nameLabel.text = ""
+
+    }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -71,5 +75,7 @@ class SongViewCell: UITableViewCell {
     {
         self.song = song
         self.coverBtn.kf.setImage(with: URL(string: song.coverUrl), for: .normal)
+        nameLabel.text = song.trackName
+
     }
 }
