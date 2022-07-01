@@ -43,7 +43,6 @@ class SongListViewModel {
             }
 
             self.songs = page == 1 ? songs : self.songs + songs
-            print("你媽的\(page)")
             return success()
         }
     }

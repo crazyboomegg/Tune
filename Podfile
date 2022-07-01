@@ -6,10 +6,10 @@ target 'Tune' do
   use_frameworks!
 
   # Pods for Tune
-  pod 'Moya'
+  pod 'Moya', '~> 13.0'
   pod 'HandyJSON', '~> 5.0.2'
-  pod 'SnapKit', '~> 5.0.0'
-  pod 'Kingfisher', '~> 7'
+  pod 'SnapKit', '~> 4.0.0'
+  pod 'Kingfisher', '~> 4'
   # pod 'Toast-Swift'
 
 

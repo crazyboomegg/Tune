@@ -8,7 +8,11 @@
 import UIKit
 import SnapKit
 import AVFoundation
+import MediaPlayer
+import Kingfisher
 
+
+@available(iOS 13.0, *)
 class SongListViewController: UIViewController, UISearchBarDelegate {
     
     lazy var searchBar: UISearchBar = {
@@ -25,7 +29,6 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
         let tableView = UITableView()
         tableView.register(SongViewCell.self, forCellReuseIdentifier: "cell")
         tableView.separatorStyle = .none
-        tableView.backgroundColor = .red
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
@@ -41,7 +44,8 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        initAction()
         initView()
         
         viewModel.getSongs(term: viewModel.term) {
@@ -69,6 +73,50 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
         })
         
     }
+    func initAction()
+    {
+        setupRemoteTransportControls()
+    }
+    
+    func setupRemoteTransportControls() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+
+        commandCenter.playCommand.addTarget { [unowned self] event in
+            if self.player.rate == 0.0 {
+                viewModel.currentSong?.currentState = .playing
+            }
+            return .commandFailed
+        }
+
+        commandCenter.pauseCommand.addTarget { [unowned self] event in
+            if self.player.rate == 1.0 {
+                viewModel.currentSong?.currentState = .stopped
+                return .success
+            }
+            return .commandFailed
+        }
+    }
+    
+    func setupNowPlaying(_ isActive: Bool = true) {
+        var nowPlayingInfo = [String : Any]()
+        nowPlayingInfo[MPMediaItemPropertyTitle] = viewModel.currentSong?.trackName
+
+        KingfisherManager.shared.retrieveImage(with: URL(string: viewModel.currentSong!.coverUrl)!, options: nil, progressBlock: nil, completionHandler: { image, error, cacheType, imageURL in
+
+            if let img = image {
+                    nowPlayingInfo[MPMediaItemPropertyArtwork] =
+                        MPMediaItemArtwork(boundsSize: img.size) { size in
+                            return img
+                }
+            }
+        })
+
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = playerItem?.currentTime().seconds
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = playerItem?.asset.duration.seconds
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
+
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = isActive ? nowPlayingInfo : nil
+    }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard !searchBar.text!.isEmpty else { return }
@@ -84,13 +132,14 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
 
 
 
+@available(iOS 13.0, *)
 extension SongListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.songs.count
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return view.bounds.height/10
+        return view.bounds.height/12
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -119,6 +168,7 @@ extension SongListViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 
+@available(iOS 13.0, *)
 extension SongListViewController: SongViewDelegate, SongViewModelDelegate {
     func didCoverTap(song: SongViewModel) {
         
@@ -150,6 +200,7 @@ extension SongListViewController: SongViewDelegate, SongViewModelDelegate {
             viewModel.currentSong?.currentState = .playing
 
         case .playing:
+            setupNowPlaying(true)
             player.play()
             
         case .pause:
@@ -158,6 +209,7 @@ extension SongListViewController: SongViewDelegate, SongViewModelDelegate {
         case .stopped:
             player.pause()
             player.seek(to: .zero)
+            setupNowPlaying(false)
             
         default:
             break

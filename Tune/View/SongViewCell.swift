@@ -14,7 +14,8 @@ protocol SongViewDelegate: AnyObject {
     func didCoverTap(song: SongViewModel)
 }
 
-class SongViewCell: UITableViewCell {
+@available(iOS 13.0, *)
+class SongViewCell: UITableViewCell, SongViewModelDelegate {
     
     var delegate: SongViewDelegate?
     var song: SongViewModel?
@@ -34,6 +35,12 @@ class SongViewCell: UITableViewCell {
 
         btn.onTap {
             self.delegate?.didCoverTap(song: self.song!)
+                
+//            UIView.animate(withDuration: 0.5) {
+//                self.coverBtn.transform3D = CATransform3DMakeRotation(state == .playing ? .pi : 0, 0, 1, 0)
+//            }
+
+            
         }
         return btn
     }()
@@ -48,10 +55,7 @@ class SongViewCell: UITableViewCell {
     
     let stackView: UIStackView = {
         let stackView = UIStackView()
-//        stackView.backgroundColor = .darkGray
-//        stackView.alignment = .fill
         stackView.axis = .vertical
-//        stackView.distribution = .equalSpacing
         stackView.spacing = 1
         return stackView
     }()
@@ -96,11 +100,6 @@ class SongViewCell: UITableViewCell {
         })
     }
     
-    override func prepareForReuse() {
-//        nameLabel.text = ""
-//        artistAlbumLabel.text = ""
-
-    }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

@@ -63,13 +63,13 @@ private struct Target: TargetType {
     var headers: [String : String]? {
 
         if(request.headerType == .json){
-            return ["Content-Type":"application/json; charset=utf-8","Apikey":"STEALING11111API22222NO33333DICK"]
+            return ["Content-Type":"application/json; charset=utf-8","Apikey":""]
         }
         else if(request.headerType == .formData){
-            return ["Content-Type":"multipart/form-data","Apikey":"STEALING11111API22222NO33333DICK"]
+            return ["Content-Type":"multipart/form-data","Apikey":""]
         }
         else{
-            return ["Content-Type":"application/x-www-form-urlencoded","Apikey":"STEALING11111API22222NO33333DICK"]
+            return ["Content-Type":"application/x-www-form-urlencoded","Apikey":""]
         }
     }
 }
