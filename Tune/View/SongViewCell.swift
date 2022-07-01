@@ -21,6 +21,8 @@ class SongViewCell: UITableViewCell {
     
     lazy var nameLabel: UILabel = {
         let label = UILabel()
+        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 14)
         label.textColor = .white
         label.text = song!.trackName
         return label
@@ -36,7 +38,29 @@ class SongViewCell: UITableViewCell {
         return btn
     }()
     
+    lazy var artistAlbumLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 12)
+        label.textColor = .white.withAlphaComponent(0.5)
+        label.text = song?.artistAlbumName
+        return label
+    }()
     
+    let stackView: UIStackView = {
+        let stackView = UIStackView()
+//        stackView.backgroundColor = .darkGray
+//        stackView.alignment = .fill
+        stackView.axis = .vertical
+//        stackView.distribution = .equalSpacing
+        stackView.spacing = 1
+        return stackView
+    }()
+    
+    let botLine: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white.withAlphaComponent(0.1)
+        return view
+    }()
     
     
     
@@ -54,17 +78,27 @@ class SongViewCell: UITableViewCell {
             make.centerY.equalToSuperview()
             make.width.height.equalTo(contentView.bounds.height - 12)
         })
-        
-        contentView.addSubview(nameLabel)
-        nameLabel.snp.makeConstraints({ make in
-            make.left.equalTo(coverBtn.snp.right).offset(6)
+
+        contentView.addSubview(stackView)
+        stackView.snp.makeConstraints({ make in
+            make.left.equalTo(coverBtn.snp.right).offset(8)
+            make.right.equalToSuperview().offset(-contentView.bounds.width/5)
             make.centerY.equalToSuperview()
         })
+        stackView.addArrangedSubview(nameLabel)
+        stackView.addArrangedSubview(artistAlbumLabel)
 
+        
+        contentView.addSubview(botLine)
+        botLine.snp.makeConstraints({ make in
+            make.left.right.bottom.equalToSuperview()
+            make.height.equalTo(1)
+        })
     }
     
     override func prepareForReuse() {
-        nameLabel.text = ""
+//        nameLabel.text = ""
+//        artistAlbumLabel.text = ""
 
     }
     required init?(coder: NSCoder) {
@@ -76,6 +110,8 @@ class SongViewCell: UITableViewCell {
         self.song = song
         self.coverBtn.kf.setImage(with: URL(string: song.coverUrl), for: .normal)
         nameLabel.text = song.trackName
+        artistAlbumLabel.text = song.artistAlbumName
+
 
     }
 }

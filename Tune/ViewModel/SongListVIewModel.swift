@@ -16,8 +16,11 @@ class SongListViewModel {
     
     func getSongs(term: String, page: Int = 1, limit:Int = 10, success: @escaping () -> Void, fail: @escaping (ResponseError) -> Void)
     {
+        self.term = term
+        self.page = page
+        
         var params = [
-            "term" : term,
+            "term" : self.term,
             "entity" : "song",
             "limit" : "\(limit)",
             "country" : "TW",
@@ -25,7 +28,8 @@ class SongListViewModel {
         if page != 1 {
             params["offset"] = "\((page-1) * limit)"
         }
-
+        
+      
         
         ListResponse<Song>.request(api: .searchSong, params: params) { res in
             guard res.isSuccess else { return fail(.deserializeFailed) }
@@ -39,6 +43,7 @@ class SongListViewModel {
             }
 
             self.songs = page == 1 ? songs : self.songs + songs
+            print("你媽的\(page)")
             return success()
         }
     }

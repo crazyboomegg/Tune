@@ -13,4 +13,9 @@ struct Song: HandyJSON {
     var trackName: String?
     var previewUrl: String?
     var artworkUrl100: String?
+    var artistName: String?
+    var collectionName: String?
+
 }
+
+

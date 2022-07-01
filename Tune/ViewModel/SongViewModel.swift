@@ -30,24 +30,25 @@ class SongViewModel {
     
     
     var trackId: Int {
-        guard let id = song.trackId else { return 0 }
-        return id
+        return song.trackId ?? 0
     }
     
     var trackName: String {
-        guard let name = song.trackName else { return "" }
-        return name
+        return song.trackName ?? ""
     }
 
     var coverUrl: String {
-        guard let url = song.artworkUrl100 else { return "" }
-        return url
+        return song.artworkUrl100 ?? ""
     }
     
     var audioUrl: String {
-        guard let url = song.previewUrl else { return "" }
-        return url
+        return song.previewUrl ?? ""
     }
+    
+    var artistAlbumName: String {
+        return "\(song.artistName ?? "") - \(song.collectionName ?? "")"
+    }
+
     
     init(song: Song)
     {

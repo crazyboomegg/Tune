@@ -9,8 +9,18 @@ import UIKit
 import SnapKit
 import AVFoundation
 
-class SongListViewController: UIViewController {
-
+class SongListViewController: UIViewController, UISearchBarDelegate {
+    
+    lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.searchBarStyle = .minimal
+        searchBar.backgroundColor = .black.withAlphaComponent(0.85)
+        searchBar.searchTextField.backgroundColor = .black.withAlphaComponent(0.5)
+        searchBar.searchTextField.textColor = .white
+        searchBar.delegate = self
+        return searchBar
+    }()
+    
     lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(SongViewCell.self, forCellReuseIdentifier: "cell")
@@ -45,11 +55,30 @@ class SongListViewController: UIViewController {
 
     func initView()
     {
-        view.addSubview(tableView)
-        tableView.snp.makeConstraints({ make in
-            make.top.bottom.left.right.equalToSuperview()
+        view.backgroundColor = .black
+        view.addSubview(searchBar)
+        searchBar.snp.makeConstraints({ make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.left.right.equalToSuperview()
         })
         
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints({ make in
+            make.top.equalTo(searchBar.snp.bottom)
+            make.bottom.left.right.equalToSuperview()
+        })
+        
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard !searchBar.text!.isEmpty else { return }
+
+        viewModel.getSongs(term: searchBar.text!) {
+            self.tableView.reloadData()
+        }
+        fail: { err in
+            print(err.localizedDescription)
+        }
     }
 }
 
