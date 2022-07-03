@@ -10,7 +10,6 @@ import UIKit
 
 protocol SongViewModelDelegate {
     func onStateChanged(state: SongViewModel.PlyayerState)
-//    func onCurrentTimeChanged(time: Double)
 }
 
 class SongViewModel {
@@ -77,19 +76,6 @@ class SongViewModel {
         return 1 - coverOpacity
     }
     
-//    var playProgress: Double {
-//        print(currentTime)
-//        print(totalTime)
-//        return currentTime/totalTime
-//    }
-//    var totalTime: Double {
-//        return Double(song.trackTimeMillis ?? 0)/10000
-//    }
-//    var currentTime = 0.0 {
-//        didSet {
-//            delegate?.onCurrentTimeChanged(time: currentTime)
-//        }
-//    }
     
     init(song: Song)
     {

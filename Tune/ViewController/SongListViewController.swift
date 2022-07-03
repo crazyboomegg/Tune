@@ -42,7 +42,6 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
     //播放器
     private var player = AVPlayer()
     private var playerItem: AVPlayerItem?
-//    private var timer: Timer?
 
     
     override func viewDidLoad() {
@@ -122,19 +121,7 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
         })
         
     }
-    
-//    func setupSongProgress(_ isActive: Bool = true)
-//    {
-//        guard isActive else { timer?.invalidate(); return }
-//
-//        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
-//            if self.player.currentItem?.status == .readyToPlay {
-//                let timeElapsed = CMTimeGetSeconds(self.player.currentTime())
-//                viewModel.currentSong!.currentTime = timeElapsed
-//            }
-//        }
-//    }
-//
+
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard !searchBar.text!.isEmpty else { return }
 
@@ -220,7 +207,6 @@ extension SongListViewController: SongViewDelegate {
             viewModel.currentSong?.currentState = .playing
 
         case .playing:
-//            setupSongProgress(true)
             setupNowPlaying(true)
             player.play()
             
@@ -232,7 +218,6 @@ extension SongListViewController: SongViewDelegate {
             player.seek(to: .zero)
             
             setupNowPlaying(false)
-//            setupSongProgress(false)
 
         default:
             break

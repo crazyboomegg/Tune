@@ -42,31 +42,16 @@ class SongViewCell: UITableViewCell {
         return btn
     }()
     
-//    lazy var shapeLayer: CAShapeLayer = {
-//        let shape = CAShapeLayer()
-//        let center = CGPoint(x: contentView.bounds.height*0.4, y: contentView.bounds.height*0.4)
-//        let path = UIBezierPath(arcCenter: center, radius: contentView.bounds.height*0.3, startAngle: -CGFloat.pi/2, endAngle: 2 * CGFloat.pi, clockwise: true)
-//        shape.path = path.cgPath
-//        shape.strokeColor = UIColor.white.cgColor
-//        shape.fillColor = UIColor.clear.cgColor
-//        shape.lineWidth = 2
-//        shape.strokeEnd = 1
-//        return shape
-//    }()
-//
+
     lazy var coverPlayBtn: HiButton = {
         let btn = HiButton()
         btn.isHidden = true
         btn.imageView?.contentMode = .scaleAspectFit
         btn.setImage(UIImage(systemName: "stop.circle", withConfiguration:  UIImage.SymbolConfiguration(textStyle: .title1)), for: .normal)
         btn.imageView?.tintColor = .white
-//        btn.backgroundColor = .white
         btn.onTap {
             self.delegate?.didCoverTap(song: self.song!)
         }
-
-//        shapeLayer.position = btn.center
-//        btn.layer.addSublayer(shapeLayer)
 
         return btn
     }()
@@ -154,20 +139,13 @@ class SongViewCell: UITableViewCell {
 
         nameLabel.text = song.trackName
         artistAlbumLabel.text = song.artistAlbumName
-
-        //  shapeLayer.strokeEnd = song.playProgress
-
     }
 
 }
 
 @available(iOS 13.0, *)
 extension SongViewCell: SongViewModelDelegate  {
-//    func onCurrentTimeChanged(time: Double) {
-//        shapeLayer.strokeEnd = CGFloat(song!.playProgress)
-//        print(song?.playProgress)
-//    }
-    
+
     func onStateChanged(state: SongViewModel.PlyayerState) {
         guard let song = self.song else { return print("The Song is nil") }
         
