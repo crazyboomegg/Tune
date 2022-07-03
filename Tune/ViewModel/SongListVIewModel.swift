@@ -16,11 +16,9 @@ class SongListViewModel {
     
     func getSongs(term: String, page: Int = 1, limit:Int = 10, success: @escaping () -> Void, fail: @escaping (ResponseError) -> Void)
     {
-        self.term = term
-        self.page = page
         
         var params = [
-            "term" : self.term,
+            "term" : term,
             "entity" : "song",
             "limit" : "\(limit)",
             "country" : "TW",
@@ -37,13 +35,24 @@ class SongListViewModel {
             guard v.results.count != 0 else { return fail(.emptyDataFailed) }
 
             var songs = [SongViewModel]()
-
+            
             for song in v.results {
-                songs.append(SongViewModel(song: song))
+                if song.trackId == self.currentSong?.trackId {
+                    songs.append(self.currentSong!)
+                }
+                else
+                {
+                    songs.append(SongViewModel(song: song))
+                }
             }
 
             self.songs = page == 1 ? songs : self.songs + songs
+            self.term = term
+            self.page = page
+
             return success()
+
+            
         }
     }
 }

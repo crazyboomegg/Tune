@@ -27,6 +27,8 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
+        tableView.backgroundColor = .black
+        tableView.keyboardDismissMode = .onDrag
         tableView.register(SongViewCell.self, forCellReuseIdentifier: "cell")
         tableView.separatorStyle = .none
         tableView.dataSource = self
@@ -40,6 +42,7 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
     //播放器
     private var player = AVPlayer()
     private var playerItem: AVPlayerItem?
+//    private var timer: Timer?
 
     
     override func viewDidLoad() {
@@ -76,6 +79,7 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
     func initAction()
     {
         setupRemoteTransportControls()
+        NotificationCenter.default.addObserver(self, selector: #selector(didPlayerEnd), name: .AVPlayerItemDidPlayToEndTime, object: nil)
     }
     
     func setupRemoteTransportControls() {
@@ -90,7 +94,7 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
 
         commandCenter.pauseCommand.addTarget { [unowned self] event in
             if self.player.rate == 1.0 {
-                viewModel.currentSong?.currentState = .stopped
+                viewModel.currentSong?.currentState = .pause
                 return .success
             }
             return .commandFailed
@@ -98,26 +102,39 @@ class SongListViewController: UIViewController, UISearchBarDelegate {
     }
     
     func setupNowPlaying(_ isActive: Bool = true) {
+        guard isActive else { return MPNowPlayingInfoCenter.default().nowPlayingInfo = nil }
+
         var nowPlayingInfo = [String : Any]()
-        nowPlayingInfo[MPMediaItemPropertyTitle] = viewModel.currentSong?.trackName
 
         KingfisherManager.shared.retrieveImage(with: URL(string: viewModel.currentSong!.coverUrl)!, options: nil, progressBlock: nil, completionHandler: { image, error, cacheType, imageURL in
 
             if let img = image {
-                    nowPlayingInfo[MPMediaItemPropertyArtwork] =
-                        MPMediaItemArtwork(boundsSize: img.size) { size in
-                            return img
-                }
+                nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: img.size) { size in return img }
             }
         })
-
-        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = playerItem?.currentTime().seconds
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = playerItem?.asset.duration.seconds
-        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
-
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = isActive ? nowPlayingInfo : nil
+        
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.69, execute: {
+            nowPlayingInfo[MPMediaItemPropertyTitle] = self.viewModel.currentSong?.trackName
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self.playerItem?.currentTime().seconds
+            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = self.playerItem?.asset.duration.seconds
+            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = self.player.rate
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        })
+        
     }
     
+//    func setupSongProgress(_ isActive: Bool = true)
+//    {
+//        guard isActive else { timer?.invalidate(); return }
+//
+//        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
+//            if self.player.currentItem?.status == .readyToPlay {
+//                let timeElapsed = CMTimeGetSeconds(self.player.currentTime())
+//                viewModel.currentSong!.currentTime = timeElapsed
+//            }
+//        }
+//    }
+//
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard !searchBar.text!.isEmpty else { return }
 
@@ -147,7 +164,6 @@ extension SongListViewController: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! SongViewCell
         cell.bind(song: viewModel.songs[indexPath.row])
         cell.delegate = self
-        cell.song?.delegate = self
         return cell
     }
 
@@ -169,7 +185,11 @@ extension SongListViewController: UITableViewDataSource, UITableViewDelegate {
 
 
 @available(iOS 13.0, *)
-extension SongListViewController: SongViewDelegate, SongViewModelDelegate {
+extension SongListViewController: SongViewDelegate {
+    @objc func didPlayerEnd() {
+        viewModel.currentSong?.currentState = .stopped
+    }
+    
     func didCoverTap(song: SongViewModel) {
         
         if song.trackId == viewModel.currentSong?.trackId {
@@ -187,9 +207,9 @@ extension SongListViewController: SongViewDelegate, SongViewModelDelegate {
         viewModel.currentSong?.currentState = .stopped
         viewModel.currentSong = song
         viewModel.currentSong?.currentState = .load
-        print(song.trackName)
-        print(song.currentState)
-        print(song.audioUrl)
+//        print(song.trackName)
+//        print(song.currentState)
+//        print(song.audioUrl)
     }
     
     func onStateChanged(state: SongViewModel.PlyayerState) {
@@ -200,6 +220,7 @@ extension SongListViewController: SongViewDelegate, SongViewModelDelegate {
             viewModel.currentSong?.currentState = .playing
 
         case .playing:
+//            setupSongProgress(true)
             setupNowPlaying(true)
             player.play()
             
@@ -209,8 +230,10 @@ extension SongListViewController: SongViewDelegate, SongViewModelDelegate {
         case .stopped:
             player.pause()
             player.seek(to: .zero)
-            setupNowPlaying(false)
             
+            setupNowPlaying(false)
+//            setupSongProgress(false)
+
         default:
             break
         }
