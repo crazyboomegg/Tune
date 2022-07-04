@@ -141,13 +141,13 @@
 		7D68C93B286D8B7C00869D23 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				7D68C946286D8B7C00869D23 /* API.swift */,
 				7D68C93F286D8B7C00869D23 /* APIConstant.swift */,
-				7D68C940286D8B7C00869D23 /* ResponseResult.swift */,
 				7D68C941286D8B7C00869D23 /* NetworkManager.swift */,
 				7D68C944286D8B7C00869D23 /* RequestProtocol.swift */,
-				7D68C945286D8B7C00869D23 /* Response.swift */,
-				7D68C946286D8B7C00869D23 /* API.swift */,
 				7D68C947286D8B7C00869D23 /* Requset.swift */,
+				7D68C940286D8B7C00869D23 /* ResponseResult.swift */,
+				7D68C945286D8B7C00869D23 /* Response.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -431,7 +431,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3CCWF8D47P;
+				DEVELOPMENT_TEAM = 9JN658Y2ZC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Tune/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -444,7 +444,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Boy.Tune;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Boy.iTune;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -460,7 +460,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3CCWF8D47P;
+				DEVELOPMENT_TEAM = 9JN658Y2ZC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Tune/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -473,7 +473,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Boy.Tune;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Boy.iTune;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

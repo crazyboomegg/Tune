@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol SongViewModelDelegate {
     func onStateChanged(state: SongViewModel.PlyayerState)
@@ -48,7 +49,33 @@ class SongViewModel {
     var artistAlbumName: String {
         return "\(song.artistName ?? "") - \(song.collectionName ?? "")"
     }
-
+    
+    var transform3D: CATransform3D {
+        var trans = CATransform3DIdentity
+        trans.m34 = 1 / -100
+        trans = CATransform3DRotate(trans, currentState == .playing ? .pi : 0, 0, 1, 0)
+        return trans
+    }
+    var coverPlayTransform3D: CATransform3D {
+        var trans = CATransform3DIdentity
+        trans.m34 = 1 / -100
+        trans = CATransform3DRotate(trans, currentState == .playing ? 0 : .pi, 0, 1, 0)
+        return trans
+    }
+    
+    var isCoverHide: Bool {
+        return currentState == .playing ? true: false
+    }
+    var isCoverPlayHide: Bool {
+        return !isCoverHide
+    }
+    var coverOpacity: Float {
+        return currentState == .playing ? 0 : 1
+    }
+    var coverPlayOpacity: Float {
+        return 1 - coverOpacity
+    }
+    
     
     init(song: Song)
     {

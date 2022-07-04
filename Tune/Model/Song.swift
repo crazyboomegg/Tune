@@ -15,6 +15,7 @@ struct Song: HandyJSON {
     var artworkUrl100: String?
     var artistName: String?
     var collectionName: String?
+//    var trackTimeMillis: Int?
 
 }
 
